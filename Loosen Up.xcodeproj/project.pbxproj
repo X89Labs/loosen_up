@@ -25,24 +25,24 @@
 
 /* Begin PBXFileReference section */
 		77390B612E196BD00099646F /* Loosen Up.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Loosen Up.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		77390B6E2E196BD30099646F /* Loosen UpTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Loosen UpTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		77390B782E196BD30099646F /* Loosen UpUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Loosen UpUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		77390B6E2E196BD30099646F /* loosen_up_tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = loosen_up_tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		77390B782E196BD30099646F /* loosen_up_uitests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = loosen_up_uitests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		77390B632E196BD00099646F /* Loosen Up */ = {
+		77390B632E196BD00099646F /* loosen_up  */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Loosen Up";
+			path = "loosen_up ";
 			sourceTree = "<group>";
 		};
-		77390B712E196BD30099646F /* Loosen UpTests */ = {
+		77390B712E196BD30099646F /* loosen_up_tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Loosen UpTests";
+			path = loosen_up_tests;
 			sourceTree = "<group>";
 		};
-		77390B7B2E196BD30099646F /* Loosen UpUITests */ = {
+		77390B7B2E196BD30099646F /* loosen_up_uitests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Loosen UpUITests";
+			path = loosen_up_uitests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,9 +75,9 @@
 		77390B582E196BD00099646F = {
 			isa = PBXGroup;
 			children = (
-				77390B632E196BD00099646F /* Loosen Up */,
-				77390B712E196BD30099646F /* Loosen UpTests */,
-				77390B7B2E196BD30099646F /* Loosen UpUITests */,
+				77390B632E196BD00099646F /* loosen_up  */,
+				77390B712E196BD30099646F /* loosen_up_tests */,
+				77390B7B2E196BD30099646F /* loosen_up_uitests */,
 				77390B622E196BD00099646F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -86,8 +86,8 @@
 			isa = PBXGroup;
 			children = (
 				77390B612E196BD00099646F /* Loosen Up.app */,
-				77390B6E2E196BD30099646F /* Loosen UpTests.xctest */,
-				77390B782E196BD30099646F /* Loosen UpUITests.xctest */,
+				77390B6E2E196BD30099646F /* loosen_up_tests.xctest */,
+				77390B782E196BD30099646F /* loosen_up_uitests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -108,7 +108,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				77390B632E196BD00099646F /* Loosen Up */,
+				77390B632E196BD00099646F /* loosen_up  */,
 			);
 			name = "Loosen Up";
 			packageProductDependencies = (
@@ -117,9 +117,9 @@
 			productReference = 77390B612E196BD00099646F /* Loosen Up.app */;
 			productType = "com.apple.product-type.application";
 		};
-		77390B6D2E196BD30099646F /* Loosen UpTests */ = {
+		77390B6D2E196BD30099646F /* loosen_up_tests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 77390B852E196BD30099646F /* Build configuration list for PBXNativeTarget "Loosen UpTests" */;
+			buildConfigurationList = 77390B852E196BD30099646F /* Build configuration list for PBXNativeTarget "loosen_up_tests" */;
 			buildPhases = (
 				77390B6A2E196BD30099646F /* Sources */,
 				77390B6B2E196BD30099646F /* Frameworks */,
@@ -131,18 +131,18 @@
 				77390B702E196BD30099646F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				77390B712E196BD30099646F /* Loosen UpTests */,
+				77390B712E196BD30099646F /* loosen_up_tests */,
 			);
-			name = "Loosen UpTests";
+			name = loosen_up_tests;
 			packageProductDependencies = (
 			);
 			productName = "Loosen UpTests";
-			productReference = 77390B6E2E196BD30099646F /* Loosen UpTests.xctest */;
+			productReference = 77390B6E2E196BD30099646F /* loosen_up_tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		77390B772E196BD30099646F /* Loosen UpUITests */ = {
+		77390B772E196BD30099646F /* loosen_up_uitests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 77390B882E196BD30099646F /* Build configuration list for PBXNativeTarget "Loosen UpUITests" */;
+			buildConfigurationList = 77390B882E196BD30099646F /* Build configuration list for PBXNativeTarget "loosen_up_uitests" */;
 			buildPhases = (
 				77390B742E196BD30099646F /* Sources */,
 				77390B752E196BD30099646F /* Frameworks */,
@@ -154,13 +154,13 @@
 				77390B7A2E196BD30099646F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				77390B7B2E196BD30099646F /* Loosen UpUITests */,
+				77390B7B2E196BD30099646F /* loosen_up_uitests */,
 			);
-			name = "Loosen UpUITests";
+			name = loosen_up_uitests;
 			packageProductDependencies = (
 			);
 			productName = "Loosen UpUITests";
-			productReference = 77390B782E196BD30099646F /* Loosen UpUITests.xctest */;
+			productReference = 77390B782E196BD30099646F /* loosen_up_uitests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -201,8 +201,8 @@
 			projectRoot = "";
 			targets = (
 				77390B602E196BD00099646F /* Loosen Up */,
-				77390B6D2E196BD30099646F /* Loosen UpTests */,
-				77390B772E196BD30099646F /* Loosen UpUITests */,
+				77390B6D2E196BD30099646F /* loosen_up_tests */,
+				77390B772E196BD30099646F /* loosen_up_uitests */,
 			);
 		};
 /* End PBXProject section */
@@ -539,7 +539,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		77390B852E196BD30099646F /* Build configuration list for PBXNativeTarget "Loosen UpTests" */ = {
+		77390B852E196BD30099646F /* Build configuration list for PBXNativeTarget "loosen_up_tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				77390B862E196BD30099646F /* Debug */,
@@ -548,7 +548,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		77390B882E196BD30099646F /* Build configuration list for PBXNativeTarget "Loosen UpUITests" */ = {
+		77390B882E196BD30099646F /* Build configuration list for PBXNativeTarget "loosen_up_uitests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				77390B892E196BD30099646F /* Debug */,
