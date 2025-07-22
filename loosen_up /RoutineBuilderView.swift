@@ -4,39 +4,50 @@
 //
 //  Created by Geoffrey Belanger on 7/6/25.
 //
-
 import SwiftUI
 
 struct RoutineBuilderView: View {
-    @State private var selectedStretches: Set<UUID> = []
-    @State private var selectedStretchesToNavigate: [Stretch]? = nil
-    
+    @Binding var navigationPath: NavigationPath
+    @State private var selectedStretches: Set<String> = []
+    @EnvironmentObject var routineManager: RoutineManager
+
     private var selectedStretchObjects: [Stretch] {
         StretchLibrary.allStretches.filter { selectedStretches.contains($0.id) }
     }
-    
+
     var body: some View {
-        NavigationStack {
-            VStack {
-                List {
-                    ForEach(StretchLibrary.allStretches) { stretch in
-                        MultipleSelectionRow(stretch: stretch, isSelected: selectedStretches.contains(stretch.id)) {
-                            if selectedStretches.contains(stretch.id) {
-                                selectedStretches.remove(stretch.id)
-                            } else {
-                                selectedStretches.insert(stretch.id)
-                            }
+        VStack {
+            List {
+                ForEach(StretchLibrary.allStretches) { stretch in
+                    MultipleSelectionRow(
+                        stretch: stretch,
+                        isSelected: selectedStretches.contains(stretch.id)
+                    ) {
+                        if selectedStretches.contains(stretch.id) {
+                            selectedStretches.remove(stretch.id)
+                        } else {
+                            selectedStretches.insert(stretch.id)
                         }
                     }
                 }
-                
-                NavigationLink(value: selectedStretchObjects) {
-                    EmptyView()
+            }
+
+            Text("Selected: \(selectedStretches.count)")
+                .font(.subheadline)
+                .padding(.top, 4)
+
+            HStack {
+                Button("Back to Main Menu") {
+                    navigationPath.removeLast(navigationPath.count)
                 }
-                .hidden()
-                
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(10)
+
+                Spacer()
+
                 Button("Next") {
-                    selectedStretchesToNavigate = selectedStretchObjects
+                    navigationPath.append(selectedStretchObjects)
                 }
                 .disabled(selectedStretches.isEmpty)
                 .padding()
@@ -44,38 +55,12 @@ struct RoutineBuilderView: View {
                 .foregroundColor(.white)
                 .cornerRadius(10)
             }
-            .navigationTitle("Build a Routine")
-            .navigationDestination(for: [Stretch].self) { stretchList in
-                CustomRoutineBuilderView(selectedStretches: stretchList)
-            }
+            .padding(.horizontal)
         }
-    }
-    
-    struct MultipleSelectionRow: View {
-        let stretch: Stretch
-        var isSelected: Bool
-        var toggle: () -> Void
-        
-        var body: some View {
-            Button(action: toggle) {
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(stretch.name)
-                            .font(.headline)
-                        Text(stretch.bodyPart)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                    }
-                    Spacer()
-                    if isSelected {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.blue)
-                    } else {
-                        Image(systemName: "circle")
-                            .foregroundColor(.gray)
-                    }
-                }
-            }
+        .navigationTitle("Build a Routine")
+        .navigationDestination(for: [Stretch].self) { stretchList in
+            CustomRoutineBuilderView(selectedStretches: stretchList)
+                .environmentObject(routineManager)
         }
     }
 }
