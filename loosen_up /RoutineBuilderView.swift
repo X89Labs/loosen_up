@@ -6,9 +6,13 @@
 //
 import SwiftUI
 
+struct StretchListWrapper: Hashable {
+    let stretches: [Stretch]
+}
+
 struct RoutineBuilderView: View {
     @Binding var navigationPath: NavigationPath
-    @State private var selectedStretches: Set<String> = []
+    @State private var selectedStretches: Set<UUID> = []
     @EnvironmentObject var routineManager: RoutineManager
 
     private var selectedStretchObjects: [Stretch] {
@@ -47,7 +51,7 @@ struct RoutineBuilderView: View {
                 Spacer()
 
                 Button("Next") {
-                    navigationPath.append(selectedStretchObjects)
+                    navigationPath.append(Route.customBuilder(stretches: selectedStretchObjects))
                 }
                 .disabled(selectedStretches.isEmpty)
                 .padding()
@@ -56,11 +60,6 @@ struct RoutineBuilderView: View {
                 .cornerRadius(10)
             }
             .padding(.horizontal)
-        }
-        .navigationTitle("Build a Routine")
-        .navigationDestination(for: [Stretch].self) { stretchList in
-            CustomRoutineBuilderView(selectedStretches: stretchList)
-                .environmentObject(routineManager)
         }
     }
 }

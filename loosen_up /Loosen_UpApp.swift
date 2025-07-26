@@ -1,38 +1,45 @@
-//
 //  Loosen_UpApp.swift
 //  Loosen Up
 //
 //  Created by Geoffrey Belanger on 7/5/25.
 //
 import SwiftUI
-
 @main
 struct LoosenUpApp: App {
+    @State private var path = NavigationPath()
     @StateObject private var routineManager = RoutineManager()
-    @State private var navigationPath = NavigationPath()
     
     var body: some Scene {
         WindowGroup {
-            NavigationStack(path: $navigationPath) {
-                WelcomeView(navigationPath: $navigationPath)
-                    .environmentObject(routineManager)
-                    .navigationDestination(for: String.self) { route in
+            NavigationStack(path: $path) {
+                WelcomeView(navigationPath: $path)
+                    .navigationDestination(for: Route.self) { route in
                         switch route {
-                        case "main":
-                            MainMenuView(navigationPath: $navigationPath)
+                        case .mainMenu:
+                            MainMenuView(navigationPath: $path)
                                 .environmentObject(routineManager)
-                        case "builder":
-                            RoutineBuilderView(navigationPath: $navigationPath)
+                        case .preview(let routine):
+                            RoutinePreviewView(routine: routine, navigationPath: $path)
                                 .environmentObject(routineManager)
-                        case "saved":
-                            SavedRoutinesView(navigationPath: $navigationPath)
+                        case .timer(let routine):
+                            StretchTimerView(routine: routine, navigationPath: $path)
                                 .environmentObject(routineManager)
-                        default:
-                            EmptyView()
+                        case .builder:
+                            RoutineBuilderView(navigationPath: $path)
+                                .environmentObject(routineManager)
+                        case .customBuilder(let stretches):  // <-- ADD THIS BLOCK
+                            CustomRoutineBuilderView(navigationPath: $path, selectedStretches: stretches)
+                                .environmentObject(routineManager)
                         }
                     }
             }
+            .environmentObject(routineManager)
         }
     }
 }
+
+
+
+
+
 

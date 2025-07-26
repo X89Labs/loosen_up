@@ -8,28 +8,21 @@
 import Foundation
 
 struct Stretch: Identifiable, Codable, Hashable {
-    let id: String
+    let id: UUID
     let name: String
     let bodyPart: String
     let durationInSeconds: Int
     let restSeconds: Int
     let videoName: String
-    
-    // Convenience initializer that auto-generates ID
-    init(name: String, bodyPart: String, durationInSeconds: Int, restSeconds: Int, videoName: String) {
-        self.id = name.lowercased()
-            .replacingOccurrences(of: " ", with: "_")
-            .replacingOccurrences(of: "'", with: "")
-            .replacingOccurrences(of: "-", with: "_")
-        self.name = name
-        self.bodyPart = bodyPart
-        self.durationInSeconds = durationInSeconds
-        self.restSeconds = restSeconds
-        self.videoName = videoName
-    }
-    
-    // Full initializer (for Codable and manual ID setting)
-    init(id: String, name: String, bodyPart: String, durationInSeconds: Int, restSeconds: Int, videoName: String) {
+
+    init(
+        id: UUID = UUID(),
+        name: String,
+        bodyPart: String,
+        durationInSeconds: Int,
+        restSeconds: Int,
+        videoName: String
+    ) {
         self.id = id
         self.name = name
         self.bodyPart = bodyPart

@@ -69,7 +69,19 @@ struct StretchLibrary {
         Array(Set(allStretches.map { $0.bodyPart })).sorted()
     }
     
-    static func stretch(withId id: String) -> Stretch? {
+    static func stretch(withId id: UUID) -> Stretch? {
         allStretches.first { $0.id == id }
+    }
+}
+
+extension StretchLibrary {
+    static func named(_ name: String) -> Stretch {
+        allStretches.first(where: { $0.name == name }) ?? Stretch(
+            name: name,
+            bodyPart: "Unknown",
+            durationInSeconds: 30,
+            restSeconds: 10,
+            videoName: ""
+        )
     }
 }

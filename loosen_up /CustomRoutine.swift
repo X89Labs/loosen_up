@@ -12,6 +12,13 @@ struct CustomRoutine: Identifiable, Codable, Hashable {
     var name: String
     var stretches: [Stretch]
     
+    // Custom initializer for built-in routines
+    init(name: String, stretches: [Stretch]) {
+        self.id = UUID()
+        self.name = name
+        self.stretches = stretches
+    }
+
     // Computed properties for convenience
     var totalDurationInSeconds: Int {
         stretches.reduce(0) { $0 + $1.durationInSeconds + $1.restSeconds }
@@ -25,3 +32,4 @@ struct CustomRoutine: Identifiable, Codable, Hashable {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !stretches.isEmpty
     }
 }
+

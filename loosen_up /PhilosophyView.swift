@@ -12,14 +12,13 @@ struct PhilosophyView: View {
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            NavigationStack {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("The X89 Labs Philosophy")
-                            .font(.title)
-                            .bold()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("The X89 Labs Philosophy")
+                        .font(.title)
+                        .bold()
 
-                        Text("""
+                    Text("""
 X89 Labs builds apps the way they used to be:
 
 - 💾 No tracking  
@@ -31,11 +30,10 @@ We believe software should serve users, not harvest them.
 
 Welcome back to apps that Just Work.
 """)
-                    }
-                    .padding()
                 }
-                .navigationTitle("About X89 Labs")
+                .padding()
             }
+            .navigationTitle("About X89 Labs")
 
             // Floating close button
             Button(action: {
@@ -49,4 +47,3 @@ Welcome back to apps that Just Work.
         }
     }
 }
-

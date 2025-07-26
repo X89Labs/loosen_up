@@ -7,16 +7,17 @@
 import SwiftUI
 
 struct CustomRoutineBuilderView: View {
+    @Binding var navigationPath: NavigationPath
     @EnvironmentObject var routineManager: RoutineManager
 
     @State private var selectedStretches: [Stretch]
     @State private var routineName: String
     @State private var allStretches = StretchLibrary.allStretches
-    @State private var showingSaveAlert = false
 
-    init(selectedStretches: [Stretch]) {
-        _selectedStretches = State(initialValue: selectedStretches)
-        _routineName = State(initialValue: "")
+    init(navigationPath: Binding<NavigationPath>, selectedStretches: [Stretch]) {
+        self._navigationPath = navigationPath
+        self._selectedStretches = State(initialValue: selectedStretches)
+        self._routineName = State(initialValue: "")
     }
 
     var body: some View {
@@ -41,14 +42,15 @@ struct CustomRoutineBuilderView: View {
                 Section(header: Text("All Stretches")) {
                     ForEach(allStretches) { stretch in
                         Button {
-                            if !selectedStretches.contains(stretch) {
+                            // Prevent duplicate IDs—this line is the key fix!
+                            if !selectedStretches.contains(where: { $0.id == stretch.id }) {
                                 selectedStretches.append(stretch)
                             }
                         } label: {
                             HStack {
                                 Text(stretch.name)
                                 Spacer()
-                                if selectedStretches.contains(stretch) {
+                                if selectedStretches.contains(where: { $0.id == stretch.id }) {
                                     Image(systemName: "checkmark")
                                         .foregroundColor(.blue)
                                 }
@@ -60,9 +62,10 @@ struct CustomRoutineBuilderView: View {
             .environment(\.editMode, .constant(.active))
 
             Button(action: {
-                let newRoutine = CustomRoutine(id: UUID(), name: routineName, stretches: selectedStretches)
+                let newRoutine = CustomRoutine(name: routineName, stretches: selectedStretches)
                 routineManager.addRoutine(newRoutine)
-                showingSaveAlert = true
+                navigationPath.removeLast(navigationPath.count)
+                navigationPath.append(Route.mainMenu)
             }) {
                 Text("Save Routine")
                     .bold()
@@ -74,11 +77,6 @@ struct CustomRoutineBuilderView: View {
             }
             .padding(.horizontal)
             .disabled(routineName.isEmpty || selectedStretches.isEmpty)
-            .alert("Routine Saved!", isPresented: $showingSaveAlert) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text("Your custom routine \"\(routineName)\" has been saved.")
-            }
 
             Spacer()
         }
@@ -93,3 +91,4 @@ struct CustomRoutineBuilderView: View {
         selectedStretches.remove(atOffsets: offsets)
     }
 }
+

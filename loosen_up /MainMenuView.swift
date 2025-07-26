@@ -1,48 +1,67 @@
-//
 //  MainMenuView.swift
 //  Loosen Up
 //
 //  Created by Geoffrey Belanger on 7/6/25.
 //
+
 import SwiftUI
 
 struct MainMenuView: View {
     @Binding var navigationPath: NavigationPath
+    @EnvironmentObject var routineManager: RoutineManager
+    @Environment(\.editMode) private var editMode
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text("What would you like to do?")
-                .font(.headline)
+        VStack {
+            Text("Your Saved Routines")
+                .font(.title2)
+                .padding(.top)
 
-            Button(action: {
-                navigationPath.append("builder")
-            }) {
-                Text("Build New Routine")
-                    .font(.title2)
+            if routineManager.savedRoutines.isEmpty {
+                Text("No routines saved yet.")
+                    .foregroundColor(.gray)
                     .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
+            } else {
+                List {
+                    ForEach(routineManager.savedRoutines) { routine in
+                        Button(action: {
+                            navigationPath.append(Route.preview(routine))
+                        }) {
+                            VStack(alignment: .leading) {
+                                Text(routine.name)
+                                    .font(.headline)
+                                Text("\(routine.stretches.count) stretches")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .onDelete(perform: routineManager.deleteRoutines)
+                }
+                .listStyle(.inset)
+                .environment(\.editMode, editMode)
             }
-            .padding(.horizontal)
-
-            Button(action: {
-                navigationPath.append("saved")
-            }) {
-                Text("Saved Routines")
-                    .font(.title2)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.gray.opacity(0.2))
-                    .foregroundColor(.black)
-                    .cornerRadius(12)
-            }
-            .padding(.horizontal)
 
             Spacer()
+
+            Button("➕ Create New Routine") {
+                navigationPath.append(Route.builder)
+            }
+            .font(.title3)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(12)
+            .padding(.horizontal)
+            .padding(.bottom, 20)
         }
-        .padding()
         .navigationTitle("Loosen Up")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                EditButton()
+            }
+        }
     }
 }
+
