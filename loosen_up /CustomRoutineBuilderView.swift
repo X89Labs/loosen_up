@@ -7,15 +7,14 @@
 import SwiftUI
 
 struct CustomRoutineBuilderView: View {
-    @Binding var navigationPath: NavigationPath
+    @EnvironmentObject var navigationCoordinator: NavigationCoordinator
     @EnvironmentObject var routineManager: RoutineManager
 
     @State private var selectedStretches: [Stretch]
     @State private var routineName: String
     @State private var allStretches = StretchLibrary.allStretches
 
-    init(navigationPath: Binding<NavigationPath>, selectedStretches: [Stretch]) {
-        self._navigationPath = navigationPath
+    init(selectedStretches: [Stretch]) {
         self._selectedStretches = State(initialValue: selectedStretches)
         self._routineName = State(initialValue: "")
     }
@@ -64,8 +63,7 @@ struct CustomRoutineBuilderView: View {
             Button(action: {
                 let newRoutine = CustomRoutine(name: routineName, stretches: selectedStretches)
                 routineManager.addRoutine(newRoutine)
-                navigationPath.removeLast(navigationPath.count)
-                navigationPath.append(Route.mainMenu)
+                navigationCoordinator.navigateToMainMenu()
             }) {
                 Text("Save Routine")
                     .bold()

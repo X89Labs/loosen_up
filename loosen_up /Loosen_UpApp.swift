@@ -6,34 +6,35 @@
 import SwiftUI
 @main
 struct LoosenUpApp: App {
-    @State private var path = NavigationPath()
     @StateObject private var routineManager = RoutineManager()
+    @StateObject private var navigationCoordinator = NavigationCoordinator()
     
     var body: some Scene {
         WindowGroup {
-            NavigationStack(path: $path) {
-                WelcomeView(navigationPath: $path)
+            NavigationStack(path: $navigationCoordinator.path) {
+                WelcomeView()
                     .navigationDestination(for: Route.self) { route in
                         switch route {
                         case .mainMenu:
-                            MainMenuView(navigationPath: $path)
+                            MainMenuView()
                                 .environmentObject(routineManager)
                         case .preview(let routine):
-                            RoutinePreviewView(routine: routine, navigationPath: $path)
+                            RoutinePreviewView(routine: routine)
                                 .environmentObject(routineManager)
                         case .timer(let routine):
-                            StretchTimerView(routine: routine, navigationPath: $path)
+                            StretchTimerView(routine: routine)
                                 .environmentObject(routineManager)
                         case .builder:
-                            RoutineBuilderView(navigationPath: $path)
+                            RoutineBuilderView()
                                 .environmentObject(routineManager)
-                        case .customBuilder(let stretches):  // <-- ADD THIS BLOCK
-                            CustomRoutineBuilderView(navigationPath: $path, selectedStretches: stretches)
+                        case .customBuilder(let stretches):
+                            CustomRoutineBuilderView(selectedStretches: stretches)
                                 .environmentObject(routineManager)
                         }
                     }
             }
             .environmentObject(routineManager)
+            .environmentObject(navigationCoordinator)
         }
     }
 }

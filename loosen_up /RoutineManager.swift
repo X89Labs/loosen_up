@@ -10,6 +10,7 @@ import Foundation
 @MainActor
 class RoutineManager: ObservableObject {
     @Published var savedRoutines: [CustomRoutine] = []
+    @Published var errorMessage: String?
 
     private let saveKey = "saved_custom_routines"
     private let userDefaults = UserDefaults.standard
@@ -26,19 +27,34 @@ class RoutineManager: ObservableObject {
     // MARK: - Core Operations
 
     func addRoutine(_ routine: CustomRoutine) {
+        guard routine.isValid else {
+            errorMessage = "Cannot save invalid routine"
+            return
+        }
+        
         guard !savedRoutines.contains(where: { $0.name == routine.name }) else {
-            print("Routine with name '\(routine.name)' already exists")
+            errorMessage = "A routine with the name '\(routine.name)' already exists"
             return
         }
 
         savedRoutines.append(routine)
-        saveRoutines()
+        if !saveRoutines() {
+            savedRoutines.removeLast() // Rollback on failure
+        }
     }
 
     func updateRoutine(_ routine: CustomRoutine) {
+        guard routine.isValid else {
+            errorMessage = "Cannot update with invalid routine data"
+            return
+        }
+        
         if let index = savedRoutines.firstIndex(where: { $0.id == routine.id }) {
+            let originalRoutine = savedRoutines[index]
             savedRoutines[index] = routine
-            saveRoutines()
+            if !saveRoutines() {
+                savedRoutines[index] = originalRoutine // Rollback on failure
+            }
         }
     }
 
@@ -70,12 +86,16 @@ class RoutineManager: ObservableObject {
 
     // MARK: - Persistence
 
-    private func saveRoutines() {
+    @discardableResult
+    private func saveRoutines() -> Bool {
         do {
             let encoded = try JSONEncoder().encode(savedRoutines)
             userDefaults.set(encoded, forKey: saveKey)
+            errorMessage = nil
+            return true
         } catch {
-            print("Failed to save routines: \(error)")
+            errorMessage = "Failed to save routines: \(error.localizedDescription)"
+            return false
         }
     }
 
@@ -86,9 +106,11 @@ class RoutineManager: ObservableObject {
 
         do {
             let decoded = try JSONDecoder().decode([CustomRoutine].self, from: data)
-            self.savedRoutines = decoded
+            // Validate loaded routines
+            self.savedRoutines = decoded.filter { $0.isValid }
+            errorMessage = nil
         } catch {
-            print("Failed to load routines: \(error)")
+            errorMessage = "Failed to load saved routines: \(error.localizedDescription)"
             self.savedRoutines = []
         }
     }
@@ -98,6 +120,11 @@ class RoutineManager: ObservableObject {
     func clearAllRoutines() {
         savedRoutines.removeAll()
         userDefaults.removeObject(forKey: saveKey)
+        errorMessage = nil
+    }
+    
+    func clearError() {
+        errorMessage = nil
     }
 }
 

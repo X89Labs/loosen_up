@@ -11,27 +11,14 @@ import Combine
 
 public struct StretchTimerView: View {
     let routine: CustomRoutine
-    @Binding var navigationPath: NavigationPath
-
-    @State private var currentIndex = 0
-    @State private var timeRemaining = 10
-    @State private var isResting = false
-    @State private var timerActive = false
-    @State private var showComplete = false
-    @State private var prepPhaseDone = false
-    @State private var audioPlayer: AVAudioPlayer?
+    @EnvironmentObject var navigationCoordinator: NavigationCoordinator
+    @StateObject private var viewModel: StretchTimerViewModel
     @State private var videoPlayer = AVPlayer()
-    @State private var isPaused = false
-
-    private let prepTime = 10
-    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
-    private var currentStretch: Stretch {
-        routine.stretches[currentIndex]
-    }
-
-    private var totalStretches: Int {
-        routine.stretches.count
+    @State private var videoObserver: NSObjectProtocol?
+    
+    init(routine: CustomRoutine) {
+        self.routine = routine
+        self._viewModel = StateObject(wrappedValue: StretchTimerViewModel(routine: routine))
     }
 
     public var body: some View {
@@ -40,10 +27,10 @@ public struct StretchTimerView: View {
                 .font(.title)
                 .padding(.top)
 
-            Text(phaseTitle)
+            Text(viewModel.phaseTitle)
                 .font(.headline)
 
-            Text(timeFormatted)
+            Text(viewModel.timeFormatted)
                 .font(.system(size: 60))
                 .monospacedDigit()
                 .padding()
@@ -51,15 +38,9 @@ public struct StretchTimerView: View {
             VideoPlayer(player: videoPlayer)
                 .frame(height: 200)
                 .cornerRadius(12)
-                .onAppear {
-                    if let url = Bundle.main.url(forResource: currentStretch.videoName, withExtension: nil) {
-                        videoPlayer.replaceCurrentItem(with: AVPlayerItem(url: url))
-                        videoPlayer.play()
-                    }
-                }
 
-            Button(isPaused ? "Resume" : "Pause") {
-                isPaused.toggle()
+            Button(viewModel.isPaused ? "Resume" : "Pause") {
+                viewModel.pauseTimer()
             }
             .padding()
             .background(Color.orange)
@@ -70,27 +51,20 @@ public struct StretchTimerView: View {
         }
         .padding()
         .onAppear {
-            timeRemaining = prepTime
-            timerActive = true
+            viewModel.startTimer()
+            playVideo(for: viewModel.currentStretch)
         }
-        .onReceive(timer) { _ in
-            guard timerActive && !isPaused else { return }
-
-            if timeRemaining > 0 {
-                timeRemaining -= 1
-                playTone(for: timeRemaining)
-            } else {
-                advancePhase()
-            }
+        .onChange(of: viewModel.currentIndex) { _ in
+            playVideo(for: viewModel.currentStretch)
         }
-        .fullScreenCover(isPresented: $showComplete) {
+        .fullScreenCover(isPresented: $viewModel.showComplete) {
             VStack(spacing: 20) {
                 Text("Routine Complete!")
                     .font(.largeTitle)
                     .padding()
 
                 Button("Back to Main Menu") {
-                    navigationPath.removeLast(navigationPath.count)
+                    navigationCoordinator.navigateToMainMenu()
                 }
                 .padding()
                 .background(Color.blue)
@@ -98,80 +72,44 @@ public struct StretchTimerView: View {
                 .cornerRadius(10)
             }
         }
-    }
-
-    private var phaseTitle: String {
-        if !prepPhaseDone {
-            return "Get Ready: \(currentStretch.name)"
-        } else {
-            return isResting ? "Rest" : currentStretch.name
+        .onDisappear {
+            cleanupVideoObserver()
         }
     }
 
-    private var timeFormatted: String {
-        let minutes = timeRemaining / 60
-        let seconds = timeRemaining % 60
-        return String(format: "%01d:%02d", minutes, seconds)
-    }
-
-    private func advancePhase() {
-        if !prepPhaseDone {
-            prepPhaseDone = true
-            timeRemaining = currentStretch.durationInSeconds
-            playVideo(for: currentStretch)
-            return
-        }
-
-        if isResting {
-            currentIndex += 1
-            if currentIndex >= totalStretches {
-                timerActive = false
-                showComplete = true
-            } else {
-                isResting = false
-                timeRemaining = routine.stretches[currentIndex].durationInSeconds
-                playVideo(for: routine.stretches[currentIndex])
-            }
-        } else {
-            isResting = true
-            timeRemaining = currentStretch.restSeconds
-            videoPlayer.replaceCurrentItem(with: nil)
-        }
-    }
-
-    private func playTone(for secondsLeft: Int) {
-        let toneName: String?
-
-        switch secondsLeft {
-        case 2:
-            toneName = "tone_short"
-        case 1:
-            toneName = "tone_short"
-        case 0:
-            toneName = "tone_long"
-        default:
-            toneName = nil
-        }
-
-        guard let name = toneName,
-              let url = Bundle.main.url(forResource: name, withExtension: "mp3") else { return }
-
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.prepareToPlay()
-            audioPlayer?.play()
-        } catch {
-            print("Failed to play tone: \(error)")
-        }
-    }
 
     private func playVideo(for stretch: Stretch) {
-        guard let url = Bundle.main.url(forResource: stretch.videoName, withExtension: nil) else {
+        cleanupVideoObserver()
+        
+        // Validate video resource exists
+        guard !stretch.videoName.isEmpty,
+              let url = Bundle.main.url(forResource: stretch.videoName, withExtension: nil) else {
+            // Fallback: clear video player and continue without video
             videoPlayer.replaceCurrentItem(with: nil)
+            print("Warning: Video file '\(stretch.videoName)' not found in bundle")
             return
         }
 
-        videoPlayer.replaceCurrentItem(with: AVPlayerItem(url: url))
+        let item = AVPlayerItem(url: url)
+
+        // Loop when finished - store observer for cleanup
+        videoObserver = NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime,
+            object: item,
+            queue: .main
+        ) { _ in
+            videoPlayer.seek(to: .zero)
+            videoPlayer.play()
+        }
+
+        videoPlayer.replaceCurrentItem(with: item)
         videoPlayer.play()
+    }
+    
+    private func cleanupVideoObserver() {
+        if let observer = videoObserver {
+            NotificationCenter.default.removeObserver(observer)
+            videoObserver = nil
+        }
     }
 }

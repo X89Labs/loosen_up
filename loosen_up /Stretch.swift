@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Stretch.swift
 //  Loosen Up
 //
 //  Created by Geoffrey Belanger on 7/8/25.
@@ -14,6 +14,8 @@ struct Stretch: Identifiable, Codable, Hashable {
     let durationInSeconds: Int
     let restSeconds: Int
     let videoName: String
+    let isBilateral: Bool
+    let parentId: UUID?  // ← NEW
 
     init(
         id: UUID = UUID(),
@@ -21,7 +23,9 @@ struct Stretch: Identifiable, Codable, Hashable {
         bodyPart: String,
         durationInSeconds: Int,
         restSeconds: Int,
-        videoName: String
+        videoName: String,
+        isBilateral: Bool = false,
+        parentId: UUID? = nil
     ) {
         self.id = id
         self.name = name
@@ -29,6 +33,8 @@ struct Stretch: Identifiable, Codable, Hashable {
         self.durationInSeconds = durationInSeconds
         self.restSeconds = restSeconds
         self.videoName = videoName
+        self.isBilateral = isBilateral
+        self.parentId = parentId
     }
     
     // Computed property for total time (stretch + rest)
@@ -41,7 +47,13 @@ struct Stretch: Identifiable, Codable, Hashable {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
         !bodyPart.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
         durationInSeconds > 0 &&
-        restSeconds >= 0 &&
-        !videoName.isEmpty
+        restSeconds >= 0
+        // Note: videoName can be empty (graceful fallback in video player)
+    }
+    
+    // Check if video resource exists in bundle
+    var hasValidVideo: Bool {
+        !videoName.isEmpty && Bundle.main.url(forResource: videoName, withExtension: nil) != nil
     }
 }
+

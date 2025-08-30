@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct WelcomeView: View {
-    @Binding var navigationPath: NavigationPath
+    @EnvironmentObject var navigationCoordinator: NavigationCoordinator
     @State private var showPhilosophy = false
 
     var body: some View {
@@ -38,7 +38,7 @@ struct WelcomeView: View {
                 .padding(.horizontal)
                 Spacer()
                 Button("Continue") {
-                    navigationPath.append(Route.mainMenu)
+                    navigationCoordinator.navigateTo(.mainMenu)
                 }
                 .font(.title2)
                 .frame(maxWidth: .infinity)

@@ -4,6 +4,7 @@
 //
 //  Created by Geoffrey Belanger on 7/6/25.
 //
+
 import SwiftUI
 
 struct StretchListWrapper: Hashable {
@@ -11,7 +12,7 @@ struct StretchListWrapper: Hashable {
 }
 
 struct RoutineBuilderView: View {
-    @Binding var navigationPath: NavigationPath
+    @EnvironmentObject var navigationCoordinator: NavigationCoordinator
     @State private var selectedStretches: Set<UUID> = []
     @EnvironmentObject var routineManager: RoutineManager
 
@@ -42,7 +43,7 @@ struct RoutineBuilderView: View {
 
             HStack {
                 Button("Back to Main Menu") {
-                    navigationPath.removeLast(navigationPath.count)
+                    navigationCoordinator.navigateToMainMenu()
                 }
                 .padding()
                 .background(Color.gray.opacity(0.2))
@@ -51,7 +52,8 @@ struct RoutineBuilderView: View {
                 Spacer()
 
                 Button("Next") {
-                    navigationPath.append(Route.customBuilder(stretches: selectedStretchObjects))
+                    let expanded = expandedStretches(from: selectedStretchObjects)
+                    navigationCoordinator.navigateTo(.customBuilder(stretches: expanded))
                 }
                 .disabled(selectedStretches.isEmpty)
                 .padding()
@@ -61,5 +63,36 @@ struct RoutineBuilderView: View {
             }
             .padding(.horizontal)
         }
+    }
+
+    private func expandedStretches(from stretches: [Stretch]) -> [Stretch] {
+        var result: [Stretch] = []
+        for stretch in stretches {
+            if stretch.isBilateral {
+                result.append(
+                    Stretch(
+                        name: "\(stretch.name) (Right)",
+                        bodyPart: stretch.bodyPart,
+                        durationInSeconds: stretch.durationInSeconds,
+                        restSeconds: stretch.restSeconds,
+                        videoName: stretch.videoName,
+                        isBilateral: false
+                    )
+                )
+                result.append(
+                    Stretch(
+                        name: "\(stretch.name) (Left)",
+                        bodyPart: stretch.bodyPart,
+                        durationInSeconds: stretch.durationInSeconds,
+                        restSeconds: stretch.restSeconds,
+                        videoName: stretch.videoName,
+                        isBilateral: false
+                    )
+                )
+            } else {
+                result.append(stretch)
+            }
+        }
+        return result
     }
 }

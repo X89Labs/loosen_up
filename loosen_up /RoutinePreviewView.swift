@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RoutinePreviewView: View {
     let routine: CustomRoutine
-    @Binding var navigationPath: NavigationPath
+    @EnvironmentObject var navigationCoordinator: NavigationCoordinator
 
     var totalDuration: Int {
         routine.totalDurationInSeconds
@@ -47,7 +47,7 @@ struct RoutinePreviewView: View {
                 .padding(.bottom, 10)
 
             Button("Start Routine") {
-                navigationPath.append(Route.timer(routine))
+                navigationCoordinator.navigateTo(.timer(routine))
             }
             .frame(maxWidth: .infinity)
             .padding()

@@ -7,9 +7,10 @@
 import SwiftUI
 
 struct MainMenuView: View {
-    @Binding var navigationPath: NavigationPath
+    @EnvironmentObject var navigationCoordinator: NavigationCoordinator
     @EnvironmentObject var routineManager: RoutineManager
     @Environment(\.editMode) private var editMode
+    @State private var showError = false
 
     var body: some View {
         VStack {
@@ -25,7 +26,7 @@ struct MainMenuView: View {
                 List {
                     ForEach(routineManager.savedRoutines) { routine in
                         Button(action: {
-                            navigationPath.append(Route.preview(routine))
+                            navigationCoordinator.navigateTo(.preview(routine))
                         }) {
                             VStack(alignment: .leading) {
                                 Text(routine.name)
@@ -45,7 +46,7 @@ struct MainMenuView: View {
             Spacer()
 
             Button("➕ Create New Routine") {
-                navigationPath.append(Route.builder)
+                navigationCoordinator.navigateTo(.builder)
             }
             .font(.title3)
             .frame(maxWidth: .infinity)
@@ -61,6 +62,16 @@ struct MainMenuView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 EditButton()
             }
+        }
+        .alert("Error", isPresented: $showError) {
+            Button("OK") {
+                routineManager.clearError()
+            }
+        } message: {
+            Text(routineManager.errorMessage ?? "An unknown error occurred")
+        }
+        .onChange(of: routineManager.errorMessage) { errorMessage in
+            showError = errorMessage != nil
         }
     }
 }
