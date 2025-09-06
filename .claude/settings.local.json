@@ -2,7 +2,18 @@
   "permissions": {
     "allow": [
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(find:*)",
+      "Bash(sips:*)",
+      "Read(/Users/geoffreybelanger/SplitBrain/SplitBrain/SplitBrain/**)",
+      "Read(/Users/geoffreybelanger/SplitBrain/SplitBrain/SplitBrain/**)",
+      "Read(/Users/geoffreybelanger/SplitBrain/SplitBrain/SplitBrain/**)",
+      "Read(/Users/geoffreybelanger/SplitBrain/SplitBrain/SplitBrain/**)",
+      "Bash(xcodebuild:*)",
+      "Bash(xcode-select:*)",
+      "Bash(sudo xcode-select:*)",
+      "Bash(swift:*)",
+      "Bash(sed:*)"
     ],
     "deny": [],
     "ask": []
